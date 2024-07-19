@@ -14,12 +14,20 @@ public class Action
     public string Name;
     public string Description;
     public int Cost;
+    public List<Block> Code;
 }
 
 public class PassiveAbility
 {
     public string Name;
     public string Description;
+    public List<Block> Code;
 }
 
-//why tf am I designing scratch
+public class Condition
+{
+    public string Name;
+    public bool Stacks;
+    public List<Block> Code;
+    public List<Block> ClearCode;
+}
