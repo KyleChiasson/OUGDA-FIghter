@@ -19,6 +19,8 @@ public class HexGrid : MonoBehaviour
     [SerializeField]
     private GameObject HexBlock;
     [SerializeField]
+    private GameObject TerrainAsset;
+    [SerializeField]
     private float tileSize;
     [SerializeField]
     private Vector2Int GridSize;
@@ -44,7 +46,8 @@ public class HexGrid : MonoBehaviour
                 if(R <= TerrainChance)
                 {
                     OBJ.GetComponent<MeshRenderer>().material.color = Color.gray;
-                    //Instantiate(TerrainAsset, new Vector3(0, 0.5f, 0), Quaternion.Euler(0, 0, 0), OBJ.transform);
+
+                    Instantiate(TerrainAsset, new Vector3(0, 0.5f, 0), Quaternion.Euler(0, 0, 0), OBJ.transform);
                 }
                 
             }

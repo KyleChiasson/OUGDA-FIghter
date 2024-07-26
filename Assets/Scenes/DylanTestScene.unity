@@ -246,8 +246,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HexBlock: {fileID: 1464523340656916107, guid: 6630ff5734d876449a8f6349f36e0ef1, type: 3}
+  TerrainAsset: {fileID: 0}
   tileSize: 1
-  GridSize: {x: 3, y: 6}
+  GridSize: {x: 5, y: 6}
   TerrainChance: 0.3
 --- !u!4 &1246408251
 Transform:
