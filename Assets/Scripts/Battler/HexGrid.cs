@@ -70,18 +70,11 @@ public class HexGrid : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("left click");
-
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo))
             {
-                Debug.Log("raycast");
-
-                Tile T = Grid.Where(i => i.Instance == hitInfo.collider.gameObject).First();
-                
-                if (T != null)
+                if(Grid.Where(i => i.Instance == hitInfo.collider.gameObject).Count() > 0)
                 {
-                    Debug.Log("not null");
-                    
+                    Tile T = Grid.Where(i => i.Instance == hitInfo.collider.gameObject).First();
                     T.Instance.GetComponent<MeshRenderer>().material.color = Color.blue;
                 }
             }
