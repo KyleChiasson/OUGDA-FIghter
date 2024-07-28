@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UIElements;
 
 public class HexGrid : MonoBehaviour
 {
@@ -9,13 +10,71 @@ public class HexGrid : MonoBehaviour
         public Vector2Int Position;
         public bool Terrain;
         public GameObject Instance;
+        public List<Tile> Adjacent;
 
-        public Tile(int x, int y, bool T, GameObject I)
+        public Tile(int x, int y, GameObject I)
         {
             Position = new Vector2Int(x, y);
-            Terrain = T;
+            Terrain = false;
             Instance = I;
 
+        }
+
+        public void SetAdjacent(List<Tile> Grid)
+        {
+            Adjacent = new List<Tile>();
+
+            Tile tile;
+
+            if (FindTile(Position.x + 1, Position.y, Grid, out tile))
+            {
+                Adjacent.Add(tile);
+            }
+            if (FindTile(Position.x - 1, Position.y, Grid, out tile))
+            {
+                Adjacent.Add(tile);
+            }
+            if (FindTile(Position.x, Position.y + 1, Grid, out tile))
+            {
+                Adjacent.Add(tile);
+            }
+            if (FindTile(Position.x, Position.y - 1, Grid, out tile))
+            {
+                Adjacent.Add(tile);
+            }
+
+            if (Position.y % 2 == 0)
+            {
+                if (FindTile(Position.x - 1, Position.y + 1, Grid, out tile))
+                {
+                    Adjacent.Add(tile);
+                }
+                if (FindTile(Position.x - 1, Position.y - 1, Grid, out tile))
+                {
+                    Adjacent.Add(tile);
+                }
+            }
+            else
+            {
+                if (FindTile(Position.x + 1, Position.y + 1, Grid, out tile))
+                {
+                    Adjacent.Add(tile);
+                }
+                if (FindTile(Position.x + 1, Position.y - 1, Grid, out tile))
+                {
+                    Adjacent.Add(tile);
+                }
+
+            }
+        }
+
+        public void AddTerrain(GameObject prefab)
+        {
+            Terrain = true;
+            
+            Instance.GetComponent<MeshRenderer>().material.color = Color.gray;
+
+            Instantiate(prefab, new Vector3(Position.x * Mathf.Sqrt(3) + (Position.y % 2 * (0.5f * Mathf.Sqrt(3))), 1, Position.y * 1.5f), Quaternion.Euler(-90, 0, 0), Instance.transform);
         }
     }
 
@@ -32,6 +91,16 @@ public class HexGrid : MonoBehaviour
 
     public List<Tile> Grid;
 
+    private static bool FindTile(int x, int y, List<Tile> Grid, out Tile tile)
+    {
+        if (Grid.Where(i => i.Position.x == x && i.Position.y == y).Count()>0)
+        {
+            tile = Grid.Where(i => i.Position.x == x && i.Position.y == y).First();
+            return true;
+        }
+        tile = null;
+        return false;
+    }
     public void CreateGrid()
     {
         Random.InitState(System.DateTime.Now.Millisecond + System.DateTime.Now.Second + System.DateTime.Now.Minute);
@@ -48,17 +117,19 @@ public class HexGrid : MonoBehaviour
                 Vector3 LocalHex = new Vector3(x * (tileSize * Mathf.Sqrt(3)) + (y % 2 * (tileSize / 2 * Mathf.Sqrt(3))), 0, y * ((tileSize / 2) + tileSize));
 
                 GameObject OBJ = Instantiate(HexBlock, LocalHex, Quaternion.Euler(-90, 0, 0), transform);
+
+                Grid.Add(new Tile(x, y, OBJ));
+                
                 if(R <= TerrainChance)
                 {
-                    OBJ.GetComponent<MeshRenderer>().material.color = Color.gray;
-
-                    Instantiate(TerrainAsset, new Vector3(0, 1f, 0) + LocalHex, Quaternion.Euler(-90, 0, 0), OBJ.transform);
+                    Grid.Last().AddTerrain(TerrainAsset);
                 }
 
-                Grid.Add(new Tile(x, y, R <= TerrainChance, OBJ));
+                
             }
         }
-        
+
+        Grid.ForEach(i => i.SetAdjacent(Grid));
     }
 
     private void Start()
@@ -75,7 +146,7 @@ public class HexGrid : MonoBehaviour
                 if(Grid.Where(i => i.Instance == hitInfo.collider.gameObject).Count() > 0)
                 {
                     Tile T = Grid.Where(i => i.Instance == hitInfo.collider.gameObject).First();
-                    T.Instance.GetComponent<MeshRenderer>().material.color = Color.blue;
+                    //T.Adjacent.ForEach(i => i.Instance.GetComponent<MeshRenderer>().material.color = Color.blue);
                 }
             }
         }
