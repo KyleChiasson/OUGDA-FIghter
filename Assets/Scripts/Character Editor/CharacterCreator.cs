@@ -4,8 +4,12 @@ using TMPro;
 
 public class CharacterCreator : Singleton<CharacterCreator>
 {
-    //name
-    //ap
+    //save button
+    //load button
+    //new button 
+
+    [SerializeField] private TMP_InputField Name;
+    [SerializeField] private TMP_InputField AP;
     //list of static abilities
     //list of moves
 
@@ -17,7 +21,7 @@ public class CharacterCreator : Singleton<CharacterCreator>
 
 public class Block
 {
-
+    public string Name;
 }
 
 //blocks
@@ -48,7 +52,7 @@ public class Block
 //decrement/increment condition
 
 //conditionals
-//if / else
+//if / else / endif
 //and or not
 //player
 //enemy
@@ -57,4 +61,4 @@ public class Block
 
 //math
 //variable
-//+ - * / %
+//= + - * / %

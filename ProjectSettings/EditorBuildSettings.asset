@@ -4,5 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 100df9a345f3d7d46b93c6b2ad47efc8
+  - enabled: 1
+    path: Assets/Scenes/CharacterEditor.unity
+    guid: 56348ee6bb60f184f9917cf336848260
+  - enabled: 1
+    path: Assets/Scenes/Battler.unity
+    guid: c90e1de3e02af4d4d8ac8d047245f735
   m_configObjects: {}
