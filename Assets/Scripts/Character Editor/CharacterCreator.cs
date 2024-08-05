@@ -1,14 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 public class CharacterCreator : Singleton<CharacterCreator>
 {
-    //save button
-    //load button
-    //new button 
+    public void BackButton()
+    {
+        Loader.Load(SceneManager.LoadSceneAsync("MainMenu"));
+    }
+    public void SaveButton()
+    {
+        //only save if character is valid
+    }
+    public void LoadButton()
+    {
+
+    }
+    public void NewCharacterButton()
+    {
+
+    }
+    //add static / move
+    //remove static / move
+ 
 
     [SerializeField] private TMP_InputField Name;
+    [SerializeField] private TMP_InputField MaxHealth;
     [SerializeField] private TMP_InputField AP;
     //list of static abilities
     //list of moves
@@ -17,6 +36,38 @@ public class CharacterCreator : Singleton<CharacterCreator>
     //each ability has a name and effect
 
     //code can be made from a list of blocks
+}
+
+public class Character
+{
+    public string Name;
+    public int MaxHealth;
+    public int ActionPoints;
+    public List<Action> Moves;
+    public List<PassiveAbility> Passives;
+}
+
+public class Action
+{
+    public string Name;
+    public string Description;
+    public int Cost;
+    public List<Block> Code;
+}
+
+public class PassiveAbility
+{
+    public string Name;
+    public string Description;
+    public List<Block> Code;
+}
+
+public class Condition
+{
+    public string Name;
+    public bool Stacks;
+    public List<Block> Code;
+    public List<Block> ClearCode;
 }
 
 public class Block
