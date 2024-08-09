@@ -247,9 +247,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HexBlock: {fileID: 1464523340656916107, guid: 6630ff5734d876449a8f6349f36e0ef1, type: 3}
   TerrainAsset: {fileID: 4516994924398138320, guid: ce7b9bcd05252944b85b2a12c7e532fd, type: 3}
-  tileSize: 1
-  GridSize: {x: 5, y: 6}
+  GridSize: {x: 10, y: 9}
   TerrainChance: 0.3
+  Player: {fileID: 305013186829077160, guid: 46594edd093acb3498009d1b636a1117, type: 3}
 --- !u!4 &1246408251
 Transform:
   m_ObjectHideFlags: 0
@@ -351,7 +351,7 @@ Transform:
   m_GameObject: {fileID: 1272800784}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 3.85, y: 10.118, z: 3.552}
+  m_LocalPosition: {x: 8.16, y: 15.3, z: 6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

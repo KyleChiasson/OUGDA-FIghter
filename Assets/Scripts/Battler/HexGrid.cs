@@ -9,6 +9,8 @@ public class HexGrid : MonoBehaviour
     {
         /// <summary> The position of the tile </summary>
         public Vector2Int Position;
+
+        public Vector3 WorldPosition;
         /// <summary> Is the tile a piece of terrain </summary>
         public bool Terrain = false;
         /// <summary> The in-game representation of the tile </summary>
@@ -17,10 +19,11 @@ public class HexGrid : MonoBehaviour
         public List<Tile> Adjacent = new List<Tile>();
 
         /// <summary> The function that we use to create a new tile </summary>
-        public Tile(int x, int y, GameObject I)
+        public Tile(int x, int y, GameObject I, Transform parent)
         {
             Position = new Vector2Int(x, y);
-            Instance = I;
+            WorldPosition = new Vector3(x * Mathf.Sqrt(3) + (y % 2 * (.5f * Mathf.Sqrt(3))), 0, y * 1.5f);
+            Instance = Instantiate(I, WorldPosition, Quaternion.Euler(-90, 0, 0), parent);
         }
 
         /// <summary> Finds all adjcent tiles in the list </summary>
@@ -82,7 +85,7 @@ public class HexGrid : MonoBehaviour
             Instance.GetComponent<MeshRenderer>().material.color = Color.gray;
 
             ///Add the rock
-            Instantiate(prefab, new Vector3(Position.x * Mathf.Sqrt(3) + (Position.y % 2 * (0.5f * Mathf.Sqrt(3))), 1, Position.y * 1.5f), Quaternion.Euler(-90, 0, 0), Instance.transform);
+            Instantiate(prefab, WorldPosition + Vector3.up, Quaternion.Euler(-90, 0, 0), Instance.transform);
         }
     }
 
@@ -98,6 +101,14 @@ public class HexGrid : MonoBehaviour
     /// <summary> The chance a tile has of being terain </summary>
     [SerializeField]
     private float TerrainChance;
+
+    [SerializeField]
+    private GameObject Player;
+
+    private GameObject Plr;
+
+    private Tile PlayerPosition;
+
 
     /// <summary> The list of all tiles in the grid </summary>
     public List<Tile> Grid = new List<Tile>();
@@ -131,27 +142,37 @@ public class HexGrid : MonoBehaviour
             for (int y = 0; y < GridSize.y; y++)
             {      
                 ///Make a new tile in the correct position
-                Tile t = new Tile(x, y, Instantiate(HexBlock, new Vector3(x * Mathf.Sqrt(3) + (y % 2 * (.5f * Mathf.Sqrt(3))), 0, y * 1.5f), Quaternion.Euler(-90, 0, 0), transform));
+                Tile t = new Tile(x, y, HexBlock, transform);
 
                 ///Add the tile to grid
                 Grid.Add(t);
-                
-                ///Randomly Add terrain
-                if(Random.Range(0f, 1f) <= TerrainChance)
-                {
-                    t.SetTerrain(TerrainAsset);
-                }
             }
         }
 
         ///Set the adjcency of all tiles in grid
         Grid.ForEach(i => i.SetAdjacent(Grid));
+
+        Grid.ForEach(i =>
+        {
+            if (i.Adjacent.Where(A => A.Terrain).Count() == 0)
+            {
+                ///Randomly Add terrain
+                if (Random.Range(0f, 1f) <= TerrainChance)
+                {
+                    i.SetTerrain(TerrainAsset);
+                }
+            }
+        });
     }
 
     private void Start()
     {
         ///create grid when starting the scene
         CreateGrid();
+
+        PlayerPosition = Grid.Where(i => !i.Terrain).First();
+
+        Plr = Instantiate(Player, PlayerPosition.WorldPosition + Vector3.up, Quaternion.identity);
     }
 
     /// <summary> Every frame </summary>
@@ -168,11 +189,22 @@ public class HexGrid : MonoBehaviour
                 {
                     ///Get that object
                     Tile T = Grid.Where(i => i.Instance == hitInfo.collider.gameObject).First();
-                    ///Test line that colors all spaces around the clicked tile
-                    //T.Adjacent.ForEach(i => i.Instance.GetComponent<MeshRenderer>().material.color = Color.blue);
+
+                    if (!T.Terrain && T.Adjacent.Contains(PlayerPosition))
+                    {
+                        PlayerPosition = T;
+                        Plr.transform.position = PlayerPosition.WorldPosition + Vector3.up;
+                    }
+                    else
+                    {
+                        Debug.Log("You can't park there, sir");
+                    }
+                    
                 }
             }
         }
+
+
     }
 
 }
