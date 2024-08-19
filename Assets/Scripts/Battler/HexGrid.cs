@@ -89,6 +89,8 @@ public class HexGrid : MonoBehaviour
         }
     }
 
+    /// "[SerializeField]" puts it in the Unity inspector
+    
     /// <summary> A prefab of the grid space </summary>
     [SerializeField]
     private GameObject HexBlock;
@@ -98,16 +100,21 @@ public class HexGrid : MonoBehaviour
     /// <summary> The size of the grid </summary>
     [SerializeField]
     private Vector2Int GridSize;
-    /// <summary> The chance a tile has of being terain </summary>
+    /// <summary> The chance a tile has of being terrain </summary>
     [SerializeField]
     private float TerrainChance;
-
+    /// <summary> Chance of a tile being terrain when adjacent to terrain </summary>
+    [SerializeField]
+    private float AdjTerrainChance;
+    /// <summary> A prefab of the player </summary>
     [SerializeField]
     private GameObject Player;
-
+    /// <summary> Physically place the player in the correct spot </summary>
     private GameObject Plr;
-
+    /// <summary> The tile where the player spawns </summary>
     private Tile PlayerPosition;
+    /// <summary> Knows if x or y is smaller in GridSize </summary>
+    private bool ShortSidesX = true;
 
 
     /// <summary> The list of all tiles in the grid </summary>
@@ -152,12 +159,32 @@ public class HexGrid : MonoBehaviour
         ///Set the adjcency of all tiles in grid
         Grid.ForEach(i => i.SetAdjacent(Grid));
 
+        ///set shorter side
+        if (GridSize.y < GridSize.x)
+        {
+            ShortSidesX = false;
+        }
+
+        /// Write out the logic, then come back to this
+        //if (ShortSidesX == true)
+
+        ///Set terrain
         Grid.ForEach(i =>
         {
+            
+
             if (i.Adjacent.Where(A => A.Terrain).Count() == 0)
             {
-                ///Randomly Add terrain
+                ///Randomly add terrain
                 if (Random.Range(0f, 1f) <= TerrainChance)
+                {
+                    i.SetTerrain(TerrainAsset);
+                }
+            }
+            else
+            {
+                ///Randomly add adjacent terrain
+                if (Random.Range(0f, 1f) <= AdjTerrainChance)
                 {
                     i.SetTerrain(TerrainAsset);
                 }
@@ -170,6 +197,7 @@ public class HexGrid : MonoBehaviour
         ///create grid when starting the scene
         CreateGrid();
 
+        ///set player spawn tile
         PlayerPosition = Grid.Where(i => !i.Terrain).First();
 
         Plr = Instantiate(Player, PlayerPosition.WorldPosition + Vector3.up, Quaternion.identity);
