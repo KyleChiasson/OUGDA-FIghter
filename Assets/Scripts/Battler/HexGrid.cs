@@ -17,6 +17,8 @@ public class HexGrid : MonoBehaviour
         public GameObject Instance;
         /// <summary> All tiles that are adjcent to this tile </summary>
         public List<Tile> Adjacent = new List<Tile>();
+        /// <summary> Is the tile on a short side </summary>
+        public bool OnShortSide = false;
 
         /// <summary> The function that we use to create a new tile </summary>
         public Tile(int x, int y, GameObject I, Transform parent)
@@ -160,33 +162,59 @@ public class HexGrid : MonoBehaviour
         Grid.ForEach(i => i.SetAdjacent(Grid));
 
         ///set shorter side
-        if (GridSize.y < GridSize.x)
+        if (GridSize.y <= GridSize.x)
         {
             ShortSidesX = false;
         }
 
-        /// Write out the logic, then come back to this
-        //if (ShortSidesX == true)
+        ///This lets the short side tiles know they're on a short side
+        if (ShortSidesX == true)
+        {
+            Grid.ForEach(i =>
+            {
+                if (i.Position.y == 0 || i.Position.y == (GridSize.y - 1))
+                {
+                    i.OnShortSide = true;
+
+                    i.Instance.GetComponent<MeshRenderer>().material.color = Color.blue;
+                }
+            });
+        }
+        else
+        {
+            Grid.ForEach(i =>
+            {
+                if (i.Position.x == 0 || i.Position.x == (GridSize.x - 1))
+                {
+                    i.OnShortSide = true;
+
+                    i.Instance.GetComponent<MeshRenderer>().material.color = Color.blue;
+                }
+            });
+        }
+
 
         ///Set terrain
         Grid.ForEach(i =>
         {
-            
-
-            if (i.Adjacent.Where(A => A.Terrain).Count() == 0)
+            ///Stops terrain from spawning on a short side
+            if (i.OnShortSide == false)
             {
-                ///Randomly add terrain
-                if (Random.Range(0f, 1f) <= TerrainChance)
+                if (i.Adjacent.Where(A => A.Terrain).Count() == 0)
                 {
-                    i.SetTerrain(TerrainAsset);
+                    ///Randomly add terrain
+                    if (Random.Range(0f, 1f) <= TerrainChance)
+                    {
+                        i.SetTerrain(TerrainAsset);
+                    }
                 }
-            }
-            else
-            {
-                ///Randomly add adjacent terrain
-                if (Random.Range(0f, 1f) <= AdjTerrainChance)
+                else
                 {
-                    i.SetTerrain(TerrainAsset);
+                    ///Randomly add adjacent terrain
+                    if (Random.Range(0f, 1f) <= AdjTerrainChance)
+                    {
+                        i.SetTerrain(TerrainAsset);
+                    }
                 }
             }
         });
@@ -198,8 +226,16 @@ public class HexGrid : MonoBehaviour
         CreateGrid();
 
         ///set player spawn tile
-        PlayerPosition = Grid.Where(i => !i.Terrain).First();
+        PlayerPosition = Grid.Where(i => i.OnShortSide).Last();
 
+        ///How do I do this???
+        
+        //if (ShortSidesX == true)
+        //{
+        //    PlayerPosition = (x/2 rounded up, 0);
+        //}
+
+        ///spawns the player physically
         Plr = Instantiate(Player, PlayerPosition.WorldPosition + Vector3.up, Quaternion.identity);
     }
 
